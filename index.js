@@ -57,7 +57,21 @@ const ranges = [
         end: 11000000,
         name: 'u11m'
     },
-    
+    {
+        start: 11000001,
+        end: 12000000,
+        name: 'u12m'
+    },
+    {
+        start: 12000001,
+        end: 13000000,
+        name: 'u13m'
+    },
+    {
+        start: 13000001,
+        end: 13000000,
+        name: 'u14m'
+    },
 ]
 
 ranges.forEach(({start, end, name}) => {
