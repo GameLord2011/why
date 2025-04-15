@@ -56,7 +56,7 @@ ranges.forEach(({start, end, name}) => {
 icontent+= `}\n`
 icontent+= `export default isOdd;\n`
 
-const filePath = path.join(__dirname, `/out/index.js`);
+const filePath = path.join(__dirname, `./out/isOdd.js`);
 fs.writeFileSync(filePath, icontent, 'utf8', (err) => {
     if (err) {
         console.error(`Error writing to file ${filePath}:`, err);
