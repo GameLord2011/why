@@ -69,7 +69,7 @@ const ranges = [
     },
     {
         start: 13000001,
-        end: 13000000,
+        end: 14000000,
         name: 'u14m'
     },
 ]
