@@ -1,78 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ranges = [
-    {
-        start: 0,
-        end: 1000000,
-        name: 'u1m'
-    },
-    {
-        start: 1000001,
-        end: 2000000,
-        name: 'u2m'
-    },
-    {
-        start: 2000001,
-        end: 3000000,
-        name: 'u3m'
-    },
-    {
-        start: 3000001,
-        end: 4000000,
-        name: 'u4m'
-    },
-    {
-        start: 4000001,
-        end: 5000000,
-        name: 'u5m'
-    },
-    {
-        start: 5000001,
-        end: 6000000,
-        name: 'u6m'
-    },
-    {
-        start: 6000001,
-        end: 7000000,
-        name: 'u7m'
-    },
-    {
-        start: 7000001,
-        end: 8000000,
-        name: 'u8m'
-    },
-    {
-        start: 8000001,
-        end: 9000000,
-        name: 'u9m'
-    },
-    {
-        start: 9000001,
-        end: 10000000,
-        name: 'u10m'
-    },
-    {
-        start: 10000001,
-        end: 11000000,
-        name: 'u11m'
-    },
-    {
-        start: 11000001,
-        end: 12000000,
-        name: 'u12m'
-    },
-    {
-        start: 12000001,
-        end: 13000000,
-        name: 'u13m'
-    },
-    {
-        start: 13000001,
-        end: 14000000,
-        name: 'u14m'
-    },
-]
+const ranges = generateRanges(100000000, 1000000);
 
 ranges.forEach(({start, end, name}) => {
     const filePath = path.join(__dirname, `/out/${name}.js`);
@@ -82,7 +11,7 @@ ranges.forEach(({start, end, name}) => {
          * @param {number} number - The number to check.
          * @returns {boolean} - Returns true if the number is even, false if odd.
          */
-        module.exports = function ${name}(number){
+        module.exports = async function ${name}(number){
     `
     for (let i = start; i <= end; i++) {
         const result = isOdd(i);
@@ -114,14 +43,12 @@ let icontent =  `
  * @returns {boolean} - Returns true if the number is even, false if odd.
  */`;
 
-ranges.forEach(({name}) => {
-    icontent+= `import ${name} from './${name}.js';\n`
-})
 
-icontent+= `function isOdd(number) {\n`;
+icontent+= `async function isOdd(number) {\n`;
 
 ranges.forEach(({start, end, name}) => {
     icontent+= `if(number >= ${start} && number <= ${end}) {\n`
+    icontent+= `const { default: ${name} } = await import('./${name}.js');\n`
     icontent+= `return ${name}(number);\n`
     icontent+= `}\n`
 })
@@ -137,3 +64,22 @@ fs.writeFileSync(filePath, icontent, 'utf8', (err) => {
         console.log(`File ${filePath} created successfully.`);
     }
 });
+
+function generateRanges(maxNumber, rangeSize = 1000000) {
+    const ranges = [];
+    let start = 0;
+    let end = rangeSize;
+
+    for (let i = 1; start < maxNumber; i++) {
+        ranges.push({
+            start: start,
+            end: Math.min(end, maxNumber),
+            name: `u${i}m`
+        });
+        start = end + 1;
+        end += rangeSize;
+    }
+
+    return ranges;
+}
+
