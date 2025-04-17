@@ -5,24 +5,12 @@ const ranges = generateRanges(100000000, 1000000);
 
 ranges.forEach(({start, end, name}) => {
     const filePath = path.join(__dirname, `/out/${name}.js`);
-    let content = `
-        /**
-         * This detects if the numbers between ${start} and ${end} are even or odd.
-         * @param {number} number - The number to check.
-         * @returns {boolean} - Returns true if the number is even, false if odd.
-         */
-        module.exports = async function ${name}(number){
-    `
+    let content = `/** * This detects if the numbers between ${start} and ${end} are even or odd. * @param {number} number - The number to check. * @returns {boolean} - Returns false if the number is even, true if odd. */module.exports = async function ${name}(number){`
     for (let i = start; i <= end; i++) {
         const result = isOdd(i);
-        content+= `
-            if (number === ${i}) {
-                return ${result};
-            }
-        `
+        content+= `if (number === ${i}){return ${result};}`
     }
-    content+= `
-    }`
+    content+= `}`
     fs.writeFileSync(filePath, content, 'utf8', (err) => {
         if (err) {
             console.error(`Error writing to file ${filePath}:`, err);
@@ -36,27 +24,17 @@ function isOdd(number) {
     return number % 2 !== 0;
 }
 
-let icontent =  `
-/**
- * This detects if a number is even or odd.
- * @param {number} number - The number to check.
- * @returns {boolean} - Returns true if the number is even, false if odd.
- */`;
+let icontent =  `/** * This detects if a number is even or odd. * @param {number} number - The number to check. * @returns {boolean} - Returns false if the number is even, true if odd.*/`;
 
-
-icontent+= `async function isOdd(number) {\n`;
+icontent+= `async function isOdd(number) {`;
 
 ranges.forEach(({start, end, name}) => {
-    icontent+= `if(number >= ${start} && number <= ${end}) {\n`
-    icontent+= `const { default: ${name} } = await import('./${name}.js');\n`
-    icontent+= `return ${name}(number);\n`
-    icontent+= `}\n`
+    icontent+= `if(number >= ${start} && number <= ${end}) {const { default: ${name} } = await import('./${name}.js');return ${name}(number);}`
 })
 
-icontent+= `}\n`
-icontent+= `export default isOdd;\n`
+icontent+= `}export default isOdd;`
 
-const filePath = path.join(__dirname, `./out/isOdd.js`);
+const filePath = path.join(__dirname, `/out/isOdd.js`);
 fs.writeFileSync(filePath, icontent, 'utf8', (err) => {
     if (err) {
         console.error(`Error writing to file ${filePath}:`, err);
